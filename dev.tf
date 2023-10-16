@@ -5,7 +5,7 @@
 Variables used across all modules
 ======*/
 locals {
-  production_availability_zones = ["${var.region}a", "${var.region}b"]
+  dev_availability_zones = ["${var.region}a", "${var.region}b"]
 }
 
 module "networking" {
@@ -16,5 +16,12 @@ module "networking" {
   vpc_cidr             = "${var.vpc_cidr}"
   public_subnets_cidr  = "${var.public_subnets_cidr}"
   private_subnets_cidr = "${var.private_subnets_cidr}"
-  availability_zones   = "${local.production_availability_zones}"
+  availability_zones   = "${local.dev_availability_zones}"
+}
+
+module "databases" {
+  source = "./modules/database"
+
+  availability_zones   = "${local.dev_availability_zones[0]}"
+  security_group_id = module.networking.database_security_group_id
 }

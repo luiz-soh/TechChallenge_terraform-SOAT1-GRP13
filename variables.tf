@@ -20,3 +20,11 @@ variable "private_subnets_cidr" {
   type        = list
   description = "The CIDR block for the private subnet"
 }
+variable "availability_zones" {
+  type        = list
+  description = "availability zone to the subnets"
+}
+
+variable "profile" {
+  description = "AWS profile to create resources"
+}

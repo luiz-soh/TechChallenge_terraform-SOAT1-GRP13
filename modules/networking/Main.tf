@@ -56,6 +56,17 @@ resource "aws_subnet" "private_subnet" {
     Environment = "${var.environment}"
   }
 }
+
+resource "aws_db_subnet_group" "db_subnet" {
+  name       = "db_subnet_group"
+  subnet_ids = [aws_subnet.public_subnet[0].id, aws_subnet.private_subnet[0].id]
+
+  tags = {
+    Name        = "${var.environment}-db_subnet_group"
+    Environment = "${var.environment}"
+  }
+}
+
 /* Routing table for private subnet */
 resource "aws_route_table" "private" {
   vpc_id = "${aws_vpc.vpc.id}"
@@ -94,8 +105,8 @@ resource "aws_route_table_association" "private" {
   route_table_id = "${aws_route_table.private.id}"
 }
 /*==== VPC's Default Security Group ======*/
-resource "aws_security_group" "default" {
-  name        = "${var.environment}-default-sg"
+resource "aws_security_group" "tech_challenge_sg" {
+  name        = "${var.environment}-tech-challenge-sg"
   description = "Default security group to allow inbound/outbound from the VPC"
   vpc_id      = "${aws_vpc.vpc.id}"
   depends_on  = [aws_vpc.vpc]
@@ -113,6 +124,22 @@ resource "aws_security_group" "default" {
     self      = "true"
   }
   tags = {
+    Environment = "${var.environment}"
+  }
+}
+
+/*====Database Security Group ======*/
+resource "aws_security_group" "database_sg" {
+  vpc_id      = "${aws_vpc.vpc.id}"
+  name        = "${var.environment}-database-sg"
+  description = "Allow all inbound for Postgres"
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+    tags = {
     Environment = "${var.environment}"
   }
 }
