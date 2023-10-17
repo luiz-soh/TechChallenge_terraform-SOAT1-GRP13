@@ -26,3 +26,8 @@ output "security_group_name" {
   description = "The name of the security group"
   value       = aws_security_group.tech_challenge_sg.name
 }
+
+output "db_subnet_group_name" {
+  description = "The name of the subnet group"
+  value       = aws_db_subnet_group.db_subnet.name
+}

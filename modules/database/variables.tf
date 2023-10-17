@@ -6,3 +6,7 @@ variable "availability_zones" {
 variable "security_group_id" {
     description = "Security group Id from networking module"
 }
+
+variable "subnet_group_name"{
+  description = "Subnet group name to indicate where the RDS will be installed"
+}

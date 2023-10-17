@@ -8,6 +8,7 @@ resource "aws_vpc" "vpc" {
     Environment = "${var.environment}"
   }
 }
+
 /*==== Subnets ======*/
 /* Internet gateway for the public subnet */
 resource "aws_internet_gateway" "ig" {
@@ -17,11 +18,13 @@ resource "aws_internet_gateway" "ig" {
     Environment = "${var.environment}"
   }
 }
+
 /* Elastic IP for NAT */
 resource "aws_eip" "nat_eip" {
   domain        = "vpc"
   depends_on = [aws_internet_gateway.ig]
 }
+
 /* NAT */
 resource "aws_nat_gateway" "nat" {
   allocation_id = "${aws_eip.nat_eip.id}"
@@ -32,6 +35,7 @@ resource "aws_nat_gateway" "nat" {
     Environment = "${var.environment}"
   }
 }
+
 /* Public subnet */
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = "${aws_vpc.vpc.id}"
@@ -44,6 +48,8 @@ resource "aws_subnet" "public_subnet" {
     Environment = "${var.environment}"
   }
 }
+
+
 /* Private subnet */
 resource "aws_subnet" "private_subnet" {
   vpc_id                  = "${aws_vpc.vpc.id}"
@@ -59,7 +65,7 @@ resource "aws_subnet" "private_subnet" {
 
 resource "aws_db_subnet_group" "db_subnet" {
   name       = "db_subnet_group"
-  subnet_ids = [aws_subnet.public_subnet[0].id, aws_subnet.private_subnet[0].id]
+  subnet_ids = aws_subnet.private_subnet[*].id
 
   tags = {
     Name        = "${var.environment}-db_subnet_group"
@@ -104,6 +110,7 @@ resource "aws_route_table_association" "private" {
   subnet_id      = "${element(aws_subnet.private_subnet.*.id, count.index)}"
   route_table_id = "${aws_route_table.private.id}"
 }
+
 /*==== VPC's Default Security Group ======*/
 resource "aws_security_group" "tech_challenge_sg" {
   name        = "${var.environment}-tech-challenge-sg"

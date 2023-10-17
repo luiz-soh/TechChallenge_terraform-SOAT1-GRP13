@@ -24,4 +24,5 @@ module "databases" {
 
   availability_zones   = "${local.dev_availability_zones[0]}"
   security_group_id = module.networking.database_security_group_id
+  subnet_group_name = module.networking.db_subnet_group_name
 }
