@@ -14,12 +14,12 @@ variable "availability_zones" {
 variable "public_subnets_cidr" {
   type        = list
   description = "public subnet"
-  default = ["10.0.0.0/17"]
+  default = ["10.0.0.0/20", "10.0.16.0/20"]
 }
 variable "private_subnets_cidr" {
   type        = list
   description = "private subnet"
-  default = ["10.0.128.0/17"]
+  default = ["10.0.128.0/20", "10.0.144.0/20"]
 }
 variable "region" {
   description = "Ambiente de desenvolvimento"

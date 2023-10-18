@@ -28,3 +28,11 @@ variable "availability_zones" {
 variable "profile" {
   description = "AWS profile to create resources"
 }
+
+variable "db_username" {
+  description = "us-west-2"
+}
+
+variable "db_password" {
+  description = "us-west-2"
+}

@@ -1,12 +1,28 @@
-variable "availability_zones" {
+variable "availability_zone" {
   description = "availability zone para as subnets"
-  default = "us-west-2a"
+  default     = "us-west-2a"
 }
 
-variable "security_group_id" {
-    description = "Security group Id from networking module"
-}
-
-variable "subnet_group_name"{
+variable "subnet_group_name" {
   description = "Subnet group name to indicate where the RDS will be installed"
+}
+
+variable "db_username" {
+  description = "us-west-2"
+}
+
+variable "db_password" {
+  description = "us-west-2"
+}
+
+variable "environment" {
+  type = string
+}
+
+variable "vpc_id" {
+  type = string
+}
+
+variable "bastion_security_group" {
+  description = "security group of EC2 bastion host"
 }

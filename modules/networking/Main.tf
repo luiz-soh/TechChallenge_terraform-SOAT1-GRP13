@@ -19,22 +19,24 @@ resource "aws_internet_gateway" "ig" {
   }
 }
 
-/* Elastic IP for NAT */
-resource "aws_eip" "nat_eip" {
-  domain        = "vpc"
-  depends_on = [aws_internet_gateway.ig]
-}
 
-/* NAT */
-resource "aws_nat_gateway" "nat" {
-  allocation_id = "${aws_eip.nat_eip.id}"
-  subnet_id     = "${element(aws_subnet.public_subnet.*.id, 0)}"
-  depends_on    = [aws_internet_gateway.ig]
-  tags = {
-    Name        = "nat"
-    Environment = "${var.environment}"
-  }
-}
+/*==== Avaliar necessidade ======*/
+# /* Elastic IP for NAT */
+# resource "aws_eip" "nat_eip" {
+#   domain        = "vpc"
+#   depends_on = [aws_internet_gateway.ig]
+# }
+
+# /* NAT */
+# resource "aws_nat_gateway" "nat" {
+#   allocation_id = "${aws_eip.nat_eip.id}"
+#   subnet_id     = "${element(aws_subnet.public_subnet.*.id, 0)}"
+#   depends_on    = [aws_internet_gateway.ig]
+#   tags = {
+#     Name        = "nat"
+#     Environment = "${var.environment}"
+#   }
+# }
 
 /* Public subnet */
 resource "aws_subnet" "public_subnet" {
@@ -44,7 +46,7 @@ resource "aws_subnet" "public_subnet" {
   availability_zone       = "${element(var.availability_zones,   count.index)}"
   map_public_ip_on_launch = true
   tags = {
-    Name        = "${var.environment}-${element(var.availability_zones, count.index)}-      public-subnet"
+    Name        = "${var.environment}-${element(var.availability_zones, count.index)}-public-subnet"
     Environment = "${var.environment}"
   }
 }
@@ -94,11 +96,14 @@ resource "aws_route" "public_internet_gateway" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = "${aws_internet_gateway.ig.id}"
 }
-resource "aws_route" "private_nat_gateway" {
-  route_table_id         = "${aws_route_table.private.id}"
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = "${aws_nat_gateway.nat.id}"
-}
+
+/*==== Avaliar necessidade ======*/
+# resource "aws_route" "private_nat_gateway" {
+#   route_table_id         = "${aws_route_table.private.id}"
+#   destination_cidr_block = "0.0.0.0/0"
+#   nat_gateway_id         = "${aws_nat_gateway.nat.id}"
+# }
+
 /* Route table associations */
 resource "aws_route_table_association" "public" {
   count          = "${length(var.public_subnets_cidr)}"
@@ -131,22 +136,6 @@ resource "aws_security_group" "tech_challenge_sg" {
     self      = "true"
   }
   tags = {
-    Environment = "${var.environment}"
-  }
-}
-
-/*====Database Security Group ======*/
-resource "aws_security_group" "database_sg" {
-  vpc_id      = "${aws_vpc.vpc.id}"
-  name        = "${var.environment}-database-sg"
-  description = "Allow all inbound for Postgres"
-  ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-    tags = {
     Environment = "${var.environment}"
   }
 }

@@ -17,10 +17,10 @@ output "security_group_id" {
   value       = aws_security_group.tech_challenge_sg.id
 }
 
-output "database_security_group_id" {
-  description = "The ID of the security group"
-  value       = aws_security_group.database_sg.id
-}
+# output "database_security_group_id" {
+#   description = "The ID of the security group"
+#   value       = aws_security_group.database_sg.id
+# }
 
 output "security_group_name" {
   description = "The name of the security group"

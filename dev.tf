@@ -6,23 +6,36 @@ Variables used across all modules
 ======*/
 locals {
   dev_availability_zones = ["${var.region}a", "${var.region}b"]
+  environment = "dev"
 }
 
 module "networking" {
   source = "./modules/networking"
 
-  region               = "${var.region}"
-  environment          = "${var.environment}"
-  vpc_cidr             = "${var.vpc_cidr}"
-  public_subnets_cidr  = "${var.public_subnets_cidr}"
-  private_subnets_cidr = "${var.private_subnets_cidr}"
-  availability_zones   = "${local.dev_availability_zones}"
+  region               = var.region
+  environment          = var.environment
+  vpc_cidr             = var.vpc_cidr
+  public_subnets_cidr  = var.public_subnets_cidr
+  private_subnets_cidr = var.private_subnets_cidr
+  availability_zones   = local.dev_availability_zones
+}
+
+module "bastion-ec2" {
+  source = "./modules/bastion"
+
+  public_subnet = module.networking.public_subnet_id
+  vpc_id = module.networking.vpc_id
+  environment = local.environment
 }
 
 module "databases" {
   source = "./modules/database"
 
-  availability_zones   = "${local.dev_availability_zones[0]}"
-  security_group_id = module.networking.database_security_group_id
-  subnet_group_name = module.networking.db_subnet_group_name
+  availability_zone = local.dev_availability_zones[0]
+  subnet_group_name  = module.networking.db_subnet_group_name
+  db_username        = var.db_username
+  db_password        = var.db_password
+  environment = local.environment
+  vpc_id = module.networking.vpc_id
+  bastion_security_group = module.bastion-ec2.bastion_security_group
 }
