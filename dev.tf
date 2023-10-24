@@ -20,14 +20,6 @@ module "networking" {
   availability_zones   = local.dev_availability_zones
 }
 
-module "bastion-ec2" {
-  source = "./modules/bastion"
-
-  public_subnet = module.networking.public_subnet_id
-  vpc_id = module.networking.vpc_id
-  environment = local.environment
-}
-
 module "databases" {
   source = "./modules/database"
 
@@ -37,5 +29,4 @@ module "databases" {
   db_password        = var.db_password
   environment = local.environment
   vpc_id = module.networking.vpc_id
-  bastion_security_group = module.bastion-ec2.bastion_security_group
 }
