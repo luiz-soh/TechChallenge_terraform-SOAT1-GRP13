@@ -1,6 +1,3 @@
-# resource "random_id" "random_id_prefix" {
-#   byte_length = 2
-# }
 /*====
 Variables used across all modules
 ======*/
@@ -29,4 +26,28 @@ module "databases" {
   db_password        = var.db_password
   environment = local.environment
   vpc_id = module.networking.vpc_id
+}
+
+module "s3" {
+  source = "./modules/s3"
+
+  environment = local.environment
+}
+
+/*==== A partir daqui precisamos de um arquivo no S3======*/
+
+module "lambda" {
+  source = "./modules/lambda"
+
+  environment = local.environment
+  bucket_name = module.s3.bucket_name
+  project_version = "1.0"
+}
+
+module "apigateway" {
+  source = "./modules/apigateway"
+
+  environment = local.environment
+  lambda_invoke_arn = module.lambda.lambda_invoke_arn
+  lambda_function_name = module.lambda.lambda_function_name
 }
